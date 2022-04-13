@@ -8,41 +8,37 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using palota_func_countries_assessment.CountryRepository;
+using System.Net;
 
 namespace palota_func_countries_assessment.Functions
 {
-    public static class countrieslist
+    public static class Continent
     {
-        [FunctionName("countries")]
+        [FunctionName("Continent")]
         public static async Task<object> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("Getting a list of countries");
+            log.LogInformation("Getting a list of countries by continent"); 
             try
             {
-                var responseMessage = await CountryRepo.Get(Environment.GetEnvironmentVariable("COUNTRIES_API_URL")+"/all");
+                string continent = req.Query["continent"];
+                var responseMessage = await CountryRepo.Get(Environment.GetEnvironmentVariable("COUNTRIES_API_URL")+"/subregion/"+continent);
 
-                if(responseMessage != null)
+                if (responseMessage != null)
                 {
                     return new OkObjectResult(responseMessage);
                 }
-
                 return new
                 {
-                    ErrorCode = 404,
-                    Result = "List is empty"
+                    HttpStatusCode.NotFound,
+                    Message = "The continent with name 'arica' could not be found"
                 };
-
             }
             catch
             {
                 throw new Exception("Error occured while trying to connect...");
             }
-
         }
-
-
-
     }
 }
