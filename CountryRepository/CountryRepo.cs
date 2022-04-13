@@ -20,6 +20,7 @@ namespace palota_func_countries_assessment.CountryRepository
                     var jsonString = await response.Content.ReadAsStringAsync();
 
                    return JsonConvert.DeserializeObject<List<Country>>(jsonString);
+
                 }
                 else
                 {
