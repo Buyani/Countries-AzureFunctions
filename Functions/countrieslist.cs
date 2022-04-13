@@ -11,7 +11,7 @@ using palota_func_countries_assessment.CountryRepository;
 
 namespace palota_func_countries_assessment.Functions
 {
-    public static class countrieslist
+    public static class Countrieslist
     {
         [FunctionName("countries")]
         public static async Task<object> Run(
