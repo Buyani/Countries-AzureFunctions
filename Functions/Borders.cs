@@ -21,10 +21,10 @@ namespace palota_func_countries_assessment.Functions
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "countries/{iso3Code}/borders")] HttpRequest req, string iso3Code ,
             ILogger log)
         {
-            log.LogInformation("Getting a list of countries by continent");
+            log.LogInformation("Getting a list of neighboring countries");
             try
             {
-                var responseMessage = await CountryRepo.BorderingCountries(Environment.GetEnvironmentVariable("COUNTRIES_API_URL") + "/all", iso3Code);
+                var responseMessage = await CountryRepo.BorderingCountries(Environment.GetEnvironmentVariable("COUNTRIES_API_URL") +"/all",iso3Code);
 
                 if (responseMessage != null)
                 {
