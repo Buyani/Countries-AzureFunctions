@@ -3,6 +3,7 @@ using palota_func_countries_assessment.Helpers;
 using palota_func_countries_assessment.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -44,6 +45,23 @@ namespace palota_func_countries_assessment.CountryRepository
             return list;
         }
 
+        public static async Task<List<CountryViewModel>> BorderingCountries(string url,string code)
+        {
+            var mapper = Mappings.InitializeAutomapper();
+            var list = new List<CountryViewModel>();
+
+            var countries = await Get(url);
+            var single = countries.Find(p => p.iso3Code == code);
+
+            if(single != null && countries != null)
+            {
+                foreach (var country in countries.Where(P=>P.subregion==single.subregion))
+                {
+                    list.Add(mapper.Map<CountryViewModel>(country));
+                }
+            }
+            return list;
+        }
 
 
 

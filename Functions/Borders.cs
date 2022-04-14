@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using palota_func_countries_assessment.CountryRepository;
+using System.Linq;
+using palota_func_countries_assessment.Models;
+using System.Collections.Generic;
 
 namespace palota_func_countries_assessment.Functions
 {
@@ -21,7 +24,7 @@ namespace palota_func_countries_assessment.Functions
             log.LogInformation("Getting a list of countries by continent");
             try
             {
-                var responseMessage = await CountryRepo.Get(Environment.GetEnvironmentVariable($"COUNTRIES_API_URL") + "/subregion/" +iso3Code);
+                var responseMessage = await CountryRepo.BorderingCountries(Environment.GetEnvironmentVariable("COUNTRIES_API_URL") + "/all", iso3Code);
 
                 if (responseMessage != null)
                 {
