@@ -15,13 +15,24 @@ namespace palota_func_countries_assessment.Functions
     {
         [FunctionName("Borders")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "countries/{iso3Code}/borders")] HttpRequest req, string iso3Code ,
             ILogger log)
         {
-            log.LogInformation("Getting a list of countries by borders");
-            var responseMessage = await CountryRepo.Get("https://restcountries.com/v3.1/subregion/europe");
+            log.LogInformation("Getting a list of countries by continent");
+            try
+            {
+                var responseMessage = await CountryRepo.Get(Environment.GetEnvironmentVariable($"COUNTRIES_API_URL") + "/subregion/" +iso3Code);
 
-            return new OkObjectResult(responseMessage);
+                if (responseMessage != null)
+                {
+                    return new OkObjectResult(responseMessage);
+                }
+                return new NotFoundObjectResult($"The countries bodering at iso3Code {iso3Code} could not be found.");
+            }
+            catch
+            {
+                throw new Exception("Error occured while trying to connect...");
+            }
         }
     }
 }

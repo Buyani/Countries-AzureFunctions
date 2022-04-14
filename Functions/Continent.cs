@@ -16,24 +16,19 @@ namespace palota_func_countries_assessment.Functions
     {
         [FunctionName("Continent")]
         public static async Task<object> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "continents/{continentName}/countries/")] HttpRequest req,string continentName,
             ILogger log)
         {
             log.LogInformation("Getting a list of countries by continent"); 
             try
             {
-                string continent = req.Query["continent"];
-                var responseMessage = await CountryRepo.Get(Environment.GetEnvironmentVariable("COUNTRIES_API_URL")+"/subregion/"+continent);
+                var responseMessage = await CountryRepo.Get(Environment.GetEnvironmentVariable("COUNTRIES_API_URL")+"/subregion/"+continentName);
 
                 if (responseMessage != null)
                 {
                     return new OkObjectResult(responseMessage);
                 }
-                return new
-                {
-                    HttpStatusCode.NotFound,
-                    Message = "The continent with name 'arica' could not be found"
-                };
+                return new NotFoundObjectResult($"The continent with name {continentName} could not be found.");
             }
             catch
             {

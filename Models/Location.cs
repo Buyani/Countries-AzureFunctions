@@ -6,7 +6,7 @@ namespace palota_func_countries_assessment.Models
 {
     public  class Location
     {
-        public double lattitude { get; set; }
-        public double longitude { get; set; }
+        public double? lattitude { get; set; }
+        public double? longitude { get; set; }
     }
 }

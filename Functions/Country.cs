@@ -8,14 +8,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using palota_func_countries_assessment.CountryRepository;
+using System.Net;
 
 namespace palota_func_countries_assessment.Functions
 {
-    public static class Countrieslist
+    public static class Country
     {
-        [FunctionName("countries")]
+        [FunctionName("Country")]
         public static async Task<object> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "get",Route = "countries")] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("Getting a list of countries");
@@ -28,12 +29,7 @@ namespace palota_func_countries_assessment.Functions
                     return new OkObjectResult(responseMessage);
                 }
 
-                return new
-                {
-                    ErrorCode = 404,
-                    Result = "List is empty"
-                };
-
+                return new NotFoundObjectResult("No countries were found");
             }
             catch
             {
@@ -41,6 +37,7 @@ namespace palota_func_countries_assessment.Functions
             }
 
         }
+
 
 
 

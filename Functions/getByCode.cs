@@ -13,28 +13,23 @@ using System.Net;
 
 namespace palota_func_countries_assessment.Functions
 {
-    public static class getByIsoCode
+    public static class getByCode
     {
-        [FunctionName("getByIsoCode")]
+        [FunctionName("getByCode")]
         public static async Task<object> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get","post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "get","post", Route = "countries/{iso3Code}")] HttpRequest req, string iso3Code,
             ILogger log)
         {
-            log.LogInformation("Getting one one country");
+            log.LogInformation("Getting  one country");
             try
             {
-                string ISOCode = req.Query["isocode"];
-                var responseMessage = await CountryRepo.Get(Environment.GetEnvironmentVariable("COUNTRIES_API_URL") + "/alpha/" + ISOCode);
+                var responseMessage = await CountryRepo.Get(Environment.GetEnvironmentVariable("COUNTRIES_API_URL") +"/alpha/"+iso3Code);
 
                 if (responseMessage != null)
                 {
                     return new OkObjectResult(responseMessage);
                 }
-                return new
-                {
-                    HttpStatusCode.NotFound,
-                    Message = "The country with ISO 3166 Alpha 3 code 'zar' could not be found."
-                };
+                return new NotFoundObjectResult($"The country with ISO 3166 Alpha 3 code {iso3Code} could not be found.");
 
             }
             catch

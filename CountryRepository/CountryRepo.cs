@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using palota_func_countries_assessment.Helpers;
 using palota_func_countries_assessment.Models;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace palota_func_countries_assessment.CountryRepository
 {
     public static class CountryRepo
     {
-        public static async Task<List<Country>> Get(string url)
+        private static  async Task<List<Country>> Countries(string url)
         {
             using (var client = new HttpClient())
             {
@@ -28,5 +29,23 @@ namespace palota_func_countries_assessment.CountryRepository
                 }
             }
         }
+
+        public static async Task<List<CountryViewModel>> Get(string url)
+        {
+            var mapper = Mappings.InitializeAutomapper();
+            var list=new List<CountryViewModel>();
+
+            var countries =await Countries(url);
+            foreach (var country in countries)
+            {
+               list.Add(mapper.Map<CountryViewModel>(country));
+            }
+
+            return list;
+        }
+
+
+
+
     }
 }
