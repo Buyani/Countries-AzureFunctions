@@ -1,39 +1,50 @@
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using palota_func_countries_assessment.CountryRepository;
-using System.Net;
+using System.Net.Http;
+using palota_func_countries_assessment.Models;
+using System.Collections.Generic;
+using palota_func_countries_assessment.Processor;
 
 namespace palota_func_countries_assessment.Functions
 {
     public static class Continent
     {
+        private static HttpClient httpClient = new HttpClient();
         [FunctionName("Continent")]
         public static async Task<object> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "continents/{continentName}/countries/")] HttpRequest req,string continentName,
+            [HttpTrigger(AuthorizationLevel.Function,nameof(HttpMethod.Get), Route = "continents/{continentName}/countries/")] HttpRequest req,string continentName,
             ILogger log)
         {
-            log.LogInformation("Getting a list of countries by continent"); 
+            var countriesList = new List<CountryViewModel>();
             try
             {
-                var responseMessage = await CountryRepo.Get(Environment.GetEnvironmentVariable("COUNTRIES_API_URL")+"/subregion/"+continentName);
+                var url = Environment.GetEnvironmentVariable("COUNTRIES_API_URL")+"/subregion/" + continentName;
+                var results = await httpClient.GetAsync(url);
 
-                if (responseMessage != null)
+                log.LogInformation($"Getting by continent{continentName}");
+                log.LogInformation("API URL: " + url);
+                log.LogInformation("IsSuccessStatusCode: " + results.IsSuccessStatusCode.ToString());
+
+                if (!results.IsSuccessStatusCode)
                 {
-                    return new OkObjectResult(responseMessage);
+                    return new BadRequestObjectResult(new Response
+                    {
+                        Message = $"The continent with name {continentName} could not be found."
+                    });
                 }
-                return new NotFoundObjectResult($"The continent with name {continentName} could not be found.");
+
+                countriesList = await ResponseProccessor.Get(results);
             }
             catch
             {
                 throw new Exception("Error occured while trying to connect...");
             }
+            return countriesList;
         }
     }
 }
